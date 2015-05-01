@@ -26,8 +26,6 @@ public:
 
     struct sigaction SetAction(void (*sigaction)(int, siginfo_t *, void *));
 
-    bool updateSigprofInterval();
-
     bool updateSigprofInterval(int);
 
 private:

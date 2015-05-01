@@ -50,21 +50,20 @@ void Processor::run() {
     while (true) {
         while (buffer_.pop());
 
-        if (!handler_.updateSigprofInterval()) {
-            return;
-        }
+//        if (!handler_.updateSigprofInterval()) {
+//            return;
+//        }
 
         if (!isRunning.load()) {
             return;
         }
 
         // TODO: make this configurable
-        sleep_for_millis(1);
+        sleep_for_millis(100);
     }
 }
 
 void Processor::start(JNIEnv *jniEnv) {
-    std::cout << "Start\n";
     jthread thread = newThread(jniEnv);
     jvmtiStartFunction callback =
             [](jvmtiEnv *jvmti_env, JNIEnv *jni_env, void *arg) {
@@ -78,5 +77,4 @@ void Processor::start(JNIEnv *jniEnv) {
 
 void Processor::stop() {
     isRunning.store(false);
-    std::cout << "Stop\n";
 }

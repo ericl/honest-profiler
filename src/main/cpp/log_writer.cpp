@@ -1,4 +1,6 @@
 #include "log_writer.h"
+#include <iostream>
+#include <iomanip>
 
 using std::copy;
 
@@ -12,14 +14,14 @@ static bool IS_LITTLE_ENDIAN = isLittleEndian();
 
 template<typename T>
 void LogWriter::writeValue(const T &value) {
-    if (IS_LITTLE_ENDIAN) {
-        const char *data = reinterpret_cast<const char *>(&value);
-        for (int i = sizeof(value) - 1; i >= 0; i--) {
-            output_.put(data[i]);
-        }
-    } else {
-        output_.write(reinterpret_cast<const char *>(&value), sizeof(value));
-    }
+//    if (IS_LITTLE_ENDIAN) {
+//        const char *data = reinterpret_cast<const char *>(&value);
+//        for (int i = sizeof(value) - 1; i >= 0; i--) {
+//            output_.put(data[i]);
+//        }
+//    } else {
+//        output_.write(reinterpret_cast<const char *>(&value), sizeof(value));
+//    }
 }
 
 // TODO: implement
@@ -37,6 +39,21 @@ void LogWriter::record(const JVMPI_CallTrace &trace) {
         recordFrame(frame.lineno, methodId);
         inspectMethod(methodId, frame);
     }
+
+    // JSON
+    output_ << "{";
+    output_ << "\"type\": \"frame\", ";
+    output_ << "\"numFrames\": " << std::dec << trace.num_frames << ", ";
+    output_ << "\"frames\": [";
+    for (int i = 0; i < trace.num_frames; i++) {
+        JVMPI_CallFrame frame = trace.frames[i];
+        output_ << "{\"methodId\": \"" << std::hex << frame.method_id << "\", ";
+        output_ << "\"lineno\": " << std::dec << frame.lineno << "}";
+        if (i != trace.num_frames - 1) {
+          output_ << ", ";
+        }
+    }
+    output_ << "]}" << std::endl;
 }
 
 void LogWriter::inspectMethod(const method_id methodId,
@@ -50,31 +67,40 @@ void LogWriter::inspectMethod(const method_id methodId,
 }
 
 void LogWriter::recordTraceStart(const jint numFrames, const int64_t threadId) {
-    output_.put(TRACE_START);
-    writeValue(numFrames);
-    writeValue(threadId);
-    output_.flush();
+//    output_.put(TRACE_START);
+//    writeValue(numFrames);
+//    writeValue(threadId);
+//    output_.flush();
 }
 
 void LogWriter::recordFrame(const jint lineNumber, const method_id methodId) {
-    output_.put(FRAME);
-    writeValue(lineNumber);
-    writeValue(methodId);
-    output_.flush();
+//    output_.put(FRAME);
+//    writeValue(lineNumber);
+//    writeValue(methodId);
+//    output_.flush();
 }
 
 void LogWriter::writeWithSize(const char *value) {
-    jint size = (jint) strlen(value);
-    writeValue(size);
-    output_.write(value, size);
+//    jint size = (jint) strlen(value);
+//    writeValue(size);
+//    output_.write(value, size);
 }
 
 void LogWriter::recordNewMethod(const int64_t methodId, const char *fileName,
         const char *className, const char *methodName) {
-    output_.put(NEW_METHOD);
-    writeValue(methodId);
-    writeWithSize(fileName);
-    writeWithSize(className);
-    writeWithSize(methodName);
-    output_.flush();
+    // JSON
+    output_ << "{";
+    output_ << "\"type\": \"newMethod\",";
+    output_ << "\"methodId\": \"0x" << std::hex << methodId << "\", ";
+    output_ << "\"fileName\": \"" << fileName << "\", ";
+    output_ << "\"className\": \"" << className << "\", ";
+    output_ << "\"methodName\": \"" << methodName << "\"";
+    output_ << "}" << std::endl;
+
+//    output_.put(NEW_METHOD);
+//    writeValue(methodId);
+//    writeWithSize(fileName);
+//    writeWithSize(className);
+//    writeWithSize(methodName);
+//    output_.flush();
 }

@@ -10,7 +10,7 @@
 
 void logError(const char *__restrict format, ...);
 
-const int DEFAULT_SAMPLING_INTERVAL = 1;
+const int DEFAULT_SAMPLING_INTERVAL = 10000;
 
 struct ConfigurationOptions {
     /** Interval in microseconds */

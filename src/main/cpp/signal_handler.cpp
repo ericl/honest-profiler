@@ -20,13 +20,6 @@ namespace {
     };
 } // namespace
 
-bool SignalHandler::updateSigprofInterval() {
-    //bool res = updateSigprofInterval(timingIntervals[intervalIndex]);
-    //intervalIndex = (intervalIndex + 1) % NUMBER_OF_INTERVALS;
-    //return res;
-    return updateSigprofInterval(1);
-}
-
 bool SignalHandler::updateSigprofInterval(const int timingInterval) {
     static struct itimerval timer;
     timer.it_interval.tv_sec = 0;
